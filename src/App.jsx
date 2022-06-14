@@ -1,7 +1,12 @@
 import * as React from "react"
 // IMPORT ANY NEEDED COMPONENTS HERE
+import Header from "./components/Header/Header.jsx"
 import { createDataSet } from "./data/dataset"
 import "./App.css"
+import Instructions from "./components/Instructions/Instructions.jsx"
+import Chip from "./components/Chip/Chip.jsx"
+import { useState } from "react"
+import NutritionalLabel from "./components/NutritionalLabel/NutritionalLabel.jsx"
 
 // don't move this!
 export const appInfo = {
@@ -21,37 +26,59 @@ export const appInfo = {
 const { data, categories, restaurants } = createDataSet()
 
 export function App() {
+  const[category, setCategory]= useState("");
+  const [restaurant, setRestaurant] = useState("");
+  const [item, setItem] = useState(""); 
+  const currentMenuItems = data.filter(stuff => {return (stuff.food_category == category) && (stuff.restaurant == restaurant)});
   return (
     <main className="App">
       {/* CATEGORIES COLUMN */}
       <div className="CategoriesColumn col">
         <div className="categories options">
           <h2 className="title">Categories</h2>
-          {/* YOUR CODE HERE */}
+          {categories.map((cat)=>(
+              <Chip label={cat} clickEvent={()=> setCategory(cat)} 
+              isActive={(cat === category)}></Chip>
+            ))}
         </div>
       </div>
 
       {/* MAIN COLUMN */}
       <div className="container">
-        {/* HEADER GOES HERE */}
+        <Header 
+        title={appInfo.title} tagline={appInfo.tagline} description={appInfo.description}
+        />
+
 
         {/* RESTAURANTS ROW */}
         <div className="RestaurantsRow">
           <h2 className="title">Restaurants</h2>
-          <div className="restaurants options">{/* YOUR CODE HERE */}</div>
+          <div className="restaurants options">
+          {restaurants.map((res)=>(
+              <Chip label={res} clickEvent={()=> setRestaurant(res)} 
+              isActive={(res===restaurant)}></Chip>
+            ))}
+          </div>
         </div>
 
-        {/* INSTRUCTIONS GO HERE */}
+       {/* INSTRUCTIONS GO HERE */} 
+        <Instructions 
+        instructions = {appInfo.instructions.start}
+        />
 
         {/* MENU DISPLAY */}
         <div className="MenuDisplay display">
           <div className="MenuItemButtons menu-items">
             <h2 className="title">Menu Items</h2>
-            {/* YOUR CODE HERE */}
-          </div>
+            {currentMenuItems.map((menu)=>(
+            <Chip label={menu.item_name} clickEvent={()=> setItem(menu)} />
+            ))}
+            </div>
 
           {/* NUTRITION FACTS */}
-          <div className="NutritionFacts nutrition-facts">{/* YOUR CODE HERE */}</div>
+          <div className="NutritionFacts nutrition-facts">
+            <NutritionalLabel item={item}/>
+          </div>
         </div>
 
         <div className="data-sources">
