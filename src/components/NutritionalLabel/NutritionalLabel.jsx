@@ -9,8 +9,8 @@ export function NutritionalLabel(props) {
 
       <h4 className="item-name">{props.item.item_name}</h4>
 
-      <ul className="fact-list">{nutritionFacts.map((unit)=>
-        <NutritionalLabelFact id={unit.id} label={unit.label} attribute={unit.attribute} item={props.item}/>
+      <ul className="fact-list">{nutritionFacts.map((unit, index)=>
+        <NutritionalLabelFact key={index} id={unit.id} label={unit.label} attribute={unit.attribute} item={props.item}/>
       )}</ul>
     </div>
   )

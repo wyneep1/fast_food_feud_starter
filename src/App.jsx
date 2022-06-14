@@ -4,10 +4,11 @@ import Header from "./components/Header/Header.jsx"
 import { createDataSet } from "./data/dataset"
 import "./App.css"
 import Instructions from "./components/Instructions/Instructions.jsx"
-import Chip from "./components/Chip/Chip.jsx"
 import { useState } from "react"
-import NutritionalLabel from "./components/NutritionalLabel/NutritionalLabel.jsx"
-
+import CategoryColumn from "./components/CategoryColumn/CategoryColumn.jsx"
+import RestaurantsRow from "./components/RestaurantsRow/RestaurantsRow.jsx"
+import DataSource from "./components/DataSource/DataSource.jsx"
+import MenuDisplay from "./components/MenuDisplay/MenuDisplay.jsx"
 // don't move this!
 export const appInfo = {
   title: `Fast Food Feud 🍔!`,
@@ -26,64 +27,44 @@ export const appInfo = {
 const { data, categories, restaurants } = createDataSet()
 
 export function App() {
+  //const[currentState, function Allowing Us to Update currentState] = useState(default state);
   const[category, setCategory]= useState("");
   const [restaurant, setRestaurant] = useState("");
-  const [item, setItem] = useState(""); 
+  const [menuItem, setItem] = useState(""); 
   const currentMenuItems = data.filter(stuff => {return (stuff.food_category == category) && (stuff.restaurant == restaurant)});
+
+  function InstructionSwitch(){
+    if(category && restaurant && menuItem){
+      return <Instructions instructions={appInfo.instructions.allSelected}/>
+    } else if(!category && restaurant && !menuItem){
+      return <Instructions instructions={appInfo.instructions.onlyRestaurant}/>
+    } else if(category && !restaurant && !menuItem){
+      return <Instructions instructions={appInfo.instructions.onlyCategory}/>
+    } else if(category && restaurant && !menuItem){
+      return <Instructions instructions={appInfo.instructions.noSelectedItem}/>
+    }else {
+      return <Instructions instructions={appInfo.instructions.start}/>
+    }
+  }
   return (
     <main className="App">
       {/* CATEGORIES COLUMN */}
-      <div className="CategoriesColumn col">
-        <div className="categories options">
-          <h2 className="title">Categories</h2>
-          {categories.map((cat)=>(
-              <Chip label={cat} clickEvent={()=> setCategory(cat)} 
-              isActive={(cat === category)}></Chip>
-            ))}
-        </div>
-      </div>
+     <CategoryColumn categories={categories} cat={category} setCategory={setCategory}/>
 
       {/* MAIN COLUMN */}
       <div className="container">
         <Header 
         title={appInfo.title} tagline={appInfo.tagline} description={appInfo.description}
         />
-
-
         {/* RESTAURANTS ROW */}
-        <div className="RestaurantsRow">
-          <h2 className="title">Restaurants</h2>
-          <div className="restaurants options">
-          {restaurants.map((res)=>(
-              <Chip label={res} clickEvent={()=> setRestaurant(res)} 
-              isActive={(res===restaurant)}></Chip>
-            ))}
-          </div>
-        </div>
+        <RestaurantsRow restaurants={restaurants} restaurant={restaurant} setRestaurant={setRestaurant}/>
 
        {/* INSTRUCTIONS GO HERE */} 
-        <Instructions 
-        instructions = {appInfo.instructions.start}
-        />
+        {InstructionSwitch()}
 
         {/* MENU DISPLAY */}
-        <div className="MenuDisplay display">
-          <div className="MenuItemButtons menu-items">
-            <h2 className="title">Menu Items</h2>
-            {currentMenuItems.map((menu)=>(
-            <Chip label={menu.item_name} clickEvent={()=> setItem(menu)} />
-            ))}
-            </div>
-
-          {/* NUTRITION FACTS */}
-          <div className="NutritionFacts nutrition-facts">
-            <NutritionalLabel item={item}/>
-          </div>
-        </div>
-
-        <div className="data-sources">
-          <p>{appInfo.dataSource}</p>
-        </div>
+        <MenuDisplay currentMenuItems={currentMenuItems} menuItem={menuItem} setItem={setItem}/> 
+        <DataSource dataSource={appInfo.dataSource}/>
       </div>
     </main>
   )
